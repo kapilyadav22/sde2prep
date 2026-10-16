@@ -19,7 +19,8 @@ export function parseFolder(html,folder=''){
   return entries;
 }
 export async function fetchFolder(fetcher=fetch,folderId=FOLDER_ID,label='',depth=0,seen=new Set()){
-  if(depth>5||seen.has(folderId))return [];
+  if(depth>5)throw new Error('Subfolders are nested too deeply. Move notes within five folder levels.');
+  if(seen.has(folderId))return [];
   seen.add(folderId);
   const response=await fetcher(`https://drive.google.com/embeddedfolderview?id=${folderId}`,{redirect:'follow',headers:{'Cache-Control':'no-cache'}});
   if(!response.ok)throw new Error('The shared folder could not be read. Please retry.');

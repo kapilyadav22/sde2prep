@@ -44,9 +44,9 @@ export function Workspace({ children, initialNotes, initialSources, problems }: 
         <Link className={`nav-item ${pathname==='/'?'active':''}`} href="/"><LayoutDashboard size={18}/>Overview</Link>
         <Link className={`nav-item ${pathname.startsWith('/library')?'active':''}`} href="/library/"><BookOpen size={18}/>All notes<span className="nav-count">{notes.length}</span></Link>
         <Link className={`nav-item ${pathname.startsWith('/bookmarks')?'active':''}`} href="/bookmarks/"><Bookmark size={18}/>Saved notes{notes.some(n=>user.saved.includes(n.id))&&<span className="nav-count">{notes.filter(n=>user.saved.includes(n.id)).length}</span>}</Link>
+        <Link className={`nav-item ${pathname.startsWith('/handwritten')?'active':''}`} href="/handwritten/"><FileText size={18}/>Handwritten notes</Link>
         <div className="nav-section">YOUR COLLECTIONS</div>
         {categories.map(c=>{const Icon=icons[c.id];return <Link key={c.id} className={`nav-item ${category?.id===c.id?'active':''}`} href={`/${c.id}/`}><Icon className={`icon-${c.id}`} size={18}/>{c.label}<ChevronRight className="nav-chevron" size={14}/></Link>;})}
-        <Link className={`nav-item ${pathname.startsWith('/handwritten')?'active':''}`} href="/handwritten/"><FileText size={18}/>Handwritten notes</Link>
       </nav>
       <div className="sidebar-bottom"><div className="profile"><span className="avatar">KY</span><div><strong>Kapil Yadav</strong></div></div></div>
     </aside>

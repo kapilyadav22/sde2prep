@@ -26,11 +26,17 @@ export async function api(request){
       const files=await list(url.searchParams.get('refresh')==='1');
       return json({files,checkedAt:new Date().toISOString(),refreshAfter:30});
     }
-    const match=/^\/api\/handwritten\/([\w-]+)\/(file|article)$/.exec(url.pathname);
+    const match=/^\/api\/handwritten\/([\w-]+)\/(file|article|preview)$/.exec(url.pathname);
     if(!match)return json({error:'Not found.'},404);
     const [,id,action]=match;
     const file=(await list()).find(file=>file.id===id);
     if(!file)return json({error:'This file is no longer in the shared notes folder. Refresh the collection.'},404);
+    if(action==='preview'){
+      if(file.kind!=='pdf')return json({error:'Preview is available for PDFs.'},400);
+      const preview=await fetch(`https://drive.google.com/thumbnail?id=${file.id}&sz=w1200`,{redirect:'follow'});
+      if(!preview.ok||!preview.headers.get('content-type')?.startsWith('image/'))return json({error:'Preview not available.'},404);
+      return new Response(preview.body,{headers:{...headers,'Content-Type':preview.headers.get('content-type')}});
+    }
     const range=request.headers.get('range');
     if(!validRange(range))return json({error:'Invalid byte range.'},416);
     const upstream=await fetch(fileEndpoint(file),{method:request.method,redirect:'follow',headers:range&&action==='file'?{Range:range}:{}});
