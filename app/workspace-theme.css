@@ -169,3 +169,15 @@ input:not([type='checkbox']),select{border-color:var(--control-border)}
 
 .pdf-first-preview{display:block;margin:auto;max-width:none;background:white;box-shadow:0 4px 20px #0002;height:auto}
 .pdf-canvas-container{position:relative}
+.live-folder-status{display:flex;align-items:center;gap:9px;color:var(--muted);font-size:13px;margin:-5px 0 20px;flex-wrap:wrap}
+.live-folder-status small{margin-left:auto;font-size:12px}
+.folder-error{background:var(--orange);border:1px solid var(--line);border-radius:8px;color:var(--text);padding:16px;margin-bottom:20px;font-size:14px}
+.folder-error .button{margin-top:14px}
+.is-spinning{animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.is-spinning{animation:none}}
+.prose.live-article{margin-top:28px;font-size:16px;line-height:1.8}
+.live-article h1{font-size:1.65em}.live-article h2{font-size:1.4em}.live-article h3{font-size:1.2em}
+.live-article h1,.live-article h2,.live-article h3,.live-article h4{line-height:1.4;margin-top:1.8em;scroll-margin-top:24px}
+.live-article img{max-width:100%;height:auto;border-radius:4px}
+.live-article table{width:100%;font-size:14px}.live-article th,.live-article td{padding:10px 14px}

@@ -1,0 +1,10 @@
+import fs from 'node:fs/promises';
+import { build } from 'esbuild';
+await fs.rm('dist',{recursive:true,force:true});
+await fs.mkdir('dist/server',{recursive:true});
+await fs.mkdir('dist/.openai',{recursive:true});
+await fs.cp('out','dist/client',{recursive:true});
+await fs.copyFile('.openai/hosting.json','dist/.openai/hosting.json');
+await build({entryPoints:['server/index.mjs'],outfile:'dist/server/index.js',bundle:true,format:'esm',platform:'node',target:'es2022',external:['node:*','fs','path','stream','events','util','buffer','zlib','assert'],minify:true,banner:{js:'import { createRequire } from "node:module"; const require = createRequire(import.meta.url);'}});
+await fs.writeFile('dist/server/wrangler.json',JSON.stringify({name:'sde2prep',main:'index.js',compatibility_date:'2026-05-15',compatibility_flags:['nodejs_compat'],assets:{directory:'../client',binding:'ASSETS',run_worker_first:['/api/*'],html_handling:'auto-trailing-slash',not_found_handling:'404-page'}},null,2));
+console.log('Built dynamic folder API and Next.js static assets.');

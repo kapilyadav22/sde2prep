@@ -13,7 +13,7 @@
     "postinstall": "node scripts/copy-worker.mjs",
     "rebuild:originals": "node scripts/rebuild-originals.mjs",
     "verify:originals": "python3 scripts/verify-originals.py",
-    "postbuild": "node scripts/finalize-static.mjs"
+    "postbuild": "node scripts/finalize-static.mjs && node scripts/build-worker.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",
@@ -23,13 +23,16 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-markdown": "^10.1.0",
-    "remark-gfm": "^4.0.1"
+    "remark-gfm": "^4.0.1",
+    "dompurify": "^3.4.17",
+    "word-extractor": "^1.0.4"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "typescript": "^5.9.0"
+    "typescript": "^5.9.0",
+    "esbuild": "^0.28.2"
   },
   "overrides": {
     "argparse": "^2.0.1"
