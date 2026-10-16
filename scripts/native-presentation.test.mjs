@@ -70,4 +70,5 @@ test('bold AWS section labels and numbered questions get semantic heading levels
   assert.equal(plan.headings.get(blocks.find(block=>block.startIndex===49)),3);
   assert.ok(!plan.headings.has(blocks.find(block=>block.startIndex===93)), 'The answer remains a normal paragraph');
   assert.ok(plan.toc.some(item=>item.title.includes('Basic EC2 Concepts')));
+  for (const block of blocks.filter(block=>/^🔹/.test(text(block)))) assert.equal(plan.headings.get(block),2,'Every section marker keeps the same hierarchy, including unbold source labels');
 });
