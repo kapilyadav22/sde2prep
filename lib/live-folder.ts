@@ -1,5 +1,5 @@
 export type LiveFile={id:string;title:string;name:string;kind:'pdf'|'docx'|'doc'|'markdown'|'text'|'gdoc';topic:string};
-export type FolderResponse={files:LiveFile[];checkedAt:string;refreshAfter:number};
+export type FolderResponse={files:LiveFile[];checkedAt:string;refreshAfter?:number};
 export async function readFolder(refresh=false,signal?:AbortSignal):Promise<FolderResponse>{
   const response=await fetch(`/api/handwritten${refresh?'?refresh=1':''}`,{cache:'no-store',signal});
   const data=await response.json();

@@ -5,7 +5,6 @@
     "category": "aws",
     "type": "Google Docs",
     "url": "https://docs.google.com/document/d/1Y73-KrCYf_DtSDfnkTBl53zq67eDbFSm0bTI14ShgRc/edit",
-    "file": "raw/aws.txt",
     "nativeSnapshot": "raw/aws-native.json"
   },
   {
@@ -14,7 +13,6 @@
     "category": "hld",
     "type": "Google Docs",
     "url": "https://docs.google.com/document/d/1vSlU2wx8SfCXvmP0Os_gcIBG1DkyelRt4q3KmbgzpzQ/edit",
-    "file": "raw/hld.txt",
     "nativeSnapshot": "raw/hld-original.json",
     "nativeGrouping": "tabs"
   },

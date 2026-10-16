@@ -1,12 +1,12 @@
 import { Buffer } from 'node:buffer';
 import WordExtractor from 'word-extractor';
-import { fetchFolder,fileEndpoint,validRange,LIBRARY_TTL } from './drive-library.mjs';
+import { fetchFolder,fileEndpoint,validRange } from './drive-library.mjs';
 let cached=null;
 let pending=null;
 const headers={'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'};
 const json=(value,status=200)=>Response.json(value,{status,headers});
 async function list(force=false){
-  if(!force&&cached&&Date.now()-cached.time<LIBRARY_TTL)return cached.files;
+  if(!force&&cached)return cached.files;
   if(pending)return pending;
   pending=fetchFolder().then(files=>{cached={files,time:Date.now()};return files;}).finally(()=>{pending=null;});
   return pending;
@@ -24,7 +24,7 @@ export async function api(request){
   try{
     if(url.pathname==='/api/handwritten'){
       const files=await list(url.searchParams.get('refresh')==='1');
-      return json({files,checkedAt:new Date().toISOString(),refreshAfter:30});
+      return json({files,checkedAt:new Date().toISOString()});
     }
     const match=/^\/api\/handwritten\/([\w-]+)\/(file|article|preview)$/.exec(url.pathname);
     if(!match)return json({error:'Not found.'},404);

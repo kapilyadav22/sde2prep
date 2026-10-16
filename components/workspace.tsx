@@ -33,7 +33,35 @@ export function Workspace({ children, initialNotes, initialSources, problems }: 
   const visit=useCallback((id:string)=>setUser(u=>u.recent[0]===id?u:{...u,recent:[id,...u.recent.filter(x=>x!==id)].slice(0,20)}),[]);
   const results=query.trim()?notes.filter(n=>(n.title+' '+n.description+' '+n.tags.join(' ')).toLowerCase().includes(query.toLowerCase())).slice(0,8):[];
   const category=categories.find(c=>pathname===`/${c.id}/` || pathname===`/${c.id}`);
-  const pageName=category?.label || (pathname.startsWith('/notes/')||pathname.startsWith('/reading')?'Reading room':pathname.startsWith('/handwritten')?'Handwritten notes':pathname.startsWith('/bookmarks')?'Saved notes':pathname.startsWith('/library')?'All notes':'Overview');
+  const crumbs:{label:string;href?:string}[]=[{label:'Workspace',href:'/'}];
+  if(pathname==='/'){
+    crumbs[0]={label:'Workspace'};
+  }else if(category){
+    crumbs.push({label:category.label});
+  }else if(pathname.startsWith('/notes/')){
+    const slug=pathname.replace(/^\/notes\//,'').replace(/\/$/,'');
+    const aliases=noteAliases as Record<string,string>;
+    const current=notes.find(n=>n.id===slug||aliases[slug]===n.id);
+    if(current){
+      const noteCat=categories.find(c=>c.id===current.category);
+      if(noteCat)crumbs.push({label:noteCat.label,href:`/${noteCat.id}/`});
+      crumbs.push({label:current.title});
+    }else{crumbs.push({label:'Reading room'});}
+  }else if(pathname.startsWith('/reading')){
+    crumbs.push({label:'Reading room'});
+  }else if(pathname.startsWith('/handwritten/read')){
+    crumbs.push({label:'Handwritten notes',href:'/handwritten/'},{label:'Reader'});
+  }else if(pathname.startsWith('/handwritten')){
+    crumbs.push({label:'Handwritten notes'});
+  }else if(pathname.startsWith('/bookmarks')){
+    crumbs.push({label:'Saved notes'});
+  }else if(pathname.startsWith('/library')){
+    crumbs.push({label:'All notes'});
+  }else if(pathname.startsWith('/sources')){
+    crumbs.push({label:'Sources'});
+  }else{
+    crumbs.push({label:'Overview'});
+  }
   return <WorkspaceContext.Provider value={{notes,sources,problems,user,ready,toggle,visit,query,setQuery}}>
     <a className="skip-link" href="#main">Skip to content</a>
     {mobile&&<button className="sidebar-overlay" aria-label="Close navigation" onClick={()=>setMobile(false)}/>}
@@ -51,7 +79,7 @@ export function Workspace({ children, initialNotes, initialSources, problems }: 
       <div className="sidebar-bottom"><div className="profile"><span className="avatar">KY</span><div><strong>Kapil Yadav</strong></div></div></div>
     </aside>
     <div className="workspace-main">
-      <header className="topbar"><div className="breadcrumb"><button className="mobile-menu icon-button" aria-label="Open navigation" onClick={()=>setMobile(true)}><Menu size={21}/></button><span>Workspace</span><ChevronRight size={14}/><strong>{pageName}</strong></div><div className="topbar-right"><div className="searchbox"><Search size={16}/><input ref={searchRef} aria-label="Search notes" placeholder="Search your notes…" value={query} onChange={e=>setQuery(e.target.value)}/><kbd>⌘ K</kbd></div><ThemeToggle/><span className="topbar-divider"/><span className="avatar small">KY</span></div>
+      <header className="topbar"><nav className="breadcrumb" aria-label="Breadcrumb"><button className="mobile-menu icon-button" aria-label="Open navigation" onClick={()=>setMobile(true)}><Menu size={21}/></button>{crumbs.map((crumb,index)=>{const isLast=index===crumbs.length-1;return <span key={index} className={`breadcrumb-crumb ${index===0?'breadcrumb-root':''}`}>{index>0&&<ChevronRight size={14} className="breadcrumb-separator" aria-hidden="true"/>}{isLast?<strong aria-current="page" title={crumb.label}>{crumb.label}</strong>:crumb.href?<Link href={crumb.href} title={crumb.label}>{crumb.label}</Link>:<span>{crumb.label}</span>}</span>;})}</nav><div className="topbar-right"><div className="searchbox"><Search size={16}/><input ref={searchRef} aria-label="Search notes" placeholder="Search your notes…" value={query} onChange={e=>setQuery(e.target.value)}/><kbd>⌘ K</kbd></div><ThemeToggle/><span className="topbar-divider"/><span className="avatar small">KY</span></div>
         {query.trim()&&<div className="search-results" role="region" aria-label="Search results"><div className="search-result-heading">SEARCH RESULTS <button className="icon-button" aria-label="Close search" onClick={()=>setQuery('')}><X size={16}/></button></div>{results.length?results.map(n=><Link key={n.id} href={noteHref(n)} onClick={()=>setQuery('')}><FileText size={18}/><div><strong>{n.title}</strong><small>{n.category.toUpperCase()} · {n.minutes} min read</small></div><ArrowUpRight size={16}/></Link>):<p>No notes match “{query}”. Try a topic or service name.</p>}</div>}
       </header>
       <main id="main" className="main-content">{children}</main>

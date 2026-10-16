@@ -149,22 +149,34 @@
 }
 
 .prose .original-document .original-table-scroll {
-  margin: 1.5em 0;
+  margin: 1.75em 0;
+  width: max-content;
   max-width: 100%;
+  overflow-x: auto;
   overscroll-behavior-inline: contain;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--surface);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
 }
 
 .prose .original-document .original-table {
-  min-width: 100%;
+  width: 100%;
+  max-width: 100%;
+  min-width: auto;
   font-family: inherit;
   font-size: .9em;
   line-height: 1.6;
+  border-collapse: collapse;
+  border-style: hidden;
 }
 
 .prose .original-document .original-table td {
-  min-width: 100px;
-  padding: .65em .8em;
+  min-width: 90px;
+  padding: .7em .95em;
   line-height: 1.6;
+  border: 1px solid var(--line);
 }
 
 .prose .original-document .original-table p {
