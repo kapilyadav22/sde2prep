@@ -14,7 +14,9 @@
     "category": "hld",
     "type": "Google Docs",
     "url": "https://docs.google.com/document/d/1vSlU2wx8SfCXvmP0Os_gcIBG1DkyelRt4q3KmbgzpzQ/edit",
-    "file": "raw/hld.txt"
+    "file": "raw/hld.txt",
+    "nativeSnapshot": "raw/hld-original.json",
+    "nativeGrouping": "tabs"
   },
   {
     "id": "microsoft-dsa",
@@ -32,5 +34,50 @@
     "url": "https://github.com/kapilyadav22/MS_LLD",
     "repository": "kapilyadav22/MS_LLD",
     "branch": "master"
+  },
+  {
+    "id": "redis-notes",
+    "title": "Redis",
+    "label": "Redis",
+    "category": "redis",
+    "type": "Google Docs",
+    "url": "https://docs.google.com/document/d/1981rf1REeVLe4VcpT8q_7M4-gKQ9VpMHp4sGG3Wy-LQ/edit",
+    "nativeSnapshot": "raw/redis-native.json"
+  },
+  {
+    "id": "java-multithreading",
+    "title": "Multithreading in Java",
+    "label": "Multithreading in Java",
+    "category": "multithreading",
+    "type": "DOCX",
+    "url": "https://docs.google.com/document/d/1og2-c3UBJMrFMtWdZzRWMHq4IvyL7w14/edit",
+    "nativeSnapshot": "raw/java-native.json"
+  },
+  {
+    "id": "springboot-notes",
+    "title": "Spring Boot",
+    "label": "Spring Boot",
+    "category": "springboot",
+    "type": "Google Docs",
+    "url": "https://docs.google.com/document/d/1guemUVstpArXz-sxrC8sASPV9DIdJvr-QWIrgCgMwDg/edit",
+    "nativeSnapshot": "raw/springboot-native.json"
+  },
+  {
+    "id": "kafka-notes",
+    "title": "Kafka & messaging queues",
+    "label": "Kafka & messaging queues",
+    "category": "kafka",
+    "type": "Google Docs",
+    "url": "https://docs.google.com/document/d/18ZzlFoF_jl7UK3xfKSCZiDRoDHkyasGfGTNyUHUpdNE/edit",
+    "nativeSnapshot": "raw/kafka-native.json"
+  },
+  {
+    "id": "testing-notes",
+    "title": "JUnit & Mockito",
+    "label": "JUnit & Mockito",
+    "category": "testing",
+    "type": "Google Docs",
+    "url": "https://docs.google.com/document/d/1zYI8yvl2Q7G7J2bE2_eDuI6Uz5Xe3hTMegxnYtRGr08/edit",
+    "nativeSnapshot": "raw/testing-native.json"
   }
 ]

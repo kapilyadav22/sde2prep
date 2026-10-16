@@ -3,7 +3,7 @@ import path from 'node:path';
 import mammoth from 'mammoth';
 import { makeNotes, replaceSource, slug } from './content.mjs';
 const [file, category, sourceId, ...titleParts] = process.argv.slice(2);
-if (!file || !['dsa','lld','hld','aws','other'].includes(category) || !sourceId) {
+if (!file || !['dsa','lld','hld','aws','redis','multithreading','springboot','kafka','testing','other'].includes(category) || !sourceId) {
   console.error('Usage: npm run import -- /path/notes.docx aws aws-notes "AWS notes"\nSupports .docx, .pdf, .md, .txt and an exported sde2prep .json library. Reuse the source ID to replace an earlier version.'); process.exit(1);
 }
 const libraryPath = new URL('../content/library.json', import.meta.url);
@@ -13,7 +13,7 @@ if (ext === '.json') {
   const uploaded = JSON.parse(await fs.readFile(file, 'utf8'));
   if (!Array.isArray(uploaded.notes) || !Array.isArray(uploaded.sources)) throw new Error('Expected an exported sde2prep library.');
   for (const source of uploaded.sources) {
-    if (!['dsa','lld','hld','aws','other'].includes(source.category) || typeof source.id !== 'string') throw new Error('Invalid source.');
+    if (!['dsa','lld','hld','aws','redis','multithreading','springboot','kafka','testing','other'].includes(source.category) || typeof source.id !== 'string') throw new Error('Invalid source.');
     const notes = uploaded.notes.filter(n => n.sourceId === source.id);
     if (notes.some(n => typeof n.content !== 'string' || typeof n.id !== 'string' || typeof n.title !== 'string' || n.category !== source.category)) throw new Error('Invalid notes.');
     library = replaceSource(library, source, notes.map(({local, ...note}) => note));

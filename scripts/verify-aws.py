@@ -58,7 +58,7 @@ library = json.loads((ROOT / 'content/library.json').read_text())
 document = json.loads((ROOT / 'content/raw/aws-native.json').read_text())
 aliases = json.loads((ROOT / 'content/note-aliases.json').read_text())
 counts = {'chapters': 0, 'images': 0, 'tables': 0, 'preserved_links': len(aliases)}
-for note in (n for n in library['notes'] if n.get('originalTabId')):
+for note in (n for n in library['notes'] if n.get('originalTabId') and n['category']=='aws'):
     tab = next(t for t in document['tabs'] if t['tabId'] == note['originalTabId'])
     text, image_ids, table_count = source_parts(tab['body']['content'])
     parser = OriginalHTML()

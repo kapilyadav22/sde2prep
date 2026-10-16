@@ -1,6 +1,6 @@
 # sde2prep
 
-A personal interview preparation workspace built with **Next.js App Router, React, and TypeScript**. Includes DSA, LLD, HLD, AWS, and Other collections, a searchable library, a focused note reader, bookmarks, completion tracking, and a Microsoft DSA practice checklist.
+A personal interview preparation workspace built with **Next.js App Router, React, and TypeScript**. Includes DSA, LLD, HLD, AWS, Redis, Java Multithreading, Spring Boot, Kafka, JUnit & Mockito, and Other collections, a searchable library, a focused note reader, bookmarks, completion tracking, and a Microsoft DSA practice checklist.
 
 ## Run locally
 
@@ -22,7 +22,7 @@ Open http://localhost:3000. The built website is in `out/` and can be hosted on 
 
 ## Your content
 
-`content/library.json` is the published content snapshot. `content/sources.json` registers your four supplied sources. The current snapshot contains 105 chapters: 29 original AWS document tabs, 36 HLD, 36 LLD, and four DSA notebook chapters, alongside **145 primary Microsoft DSA problems**. AWS preserves the original text, 136 diagrams, 416 tables, headings, nested lists, and inline formatting. HLD includes native tables, callouts, and 347 embedded diagrams. Existing AWS URLs remain available as canonical aliases; bookmarks and progress migrate to the corresponding original chapter. The original links remain available on notes and the Sources page.
+`content/library.json` is the published content snapshot. `content/sources.json` registers your four supplied sources. The published library includes 159 chapters across ten collections. Original AWS and HLD documents retain their source text, diagrams, tables, lists, headings, and formatting. Redis, Spring Boot, Kafka, and JUnit/Mockito combine related document tabs into ordered chapters; Java Multithreading preserves the Word source in ten contiguous chapters. LLD has a repository explorer with hierarchical folders and separately presented original source files. DSA has 142 canonical LeetCode problem links verified against the official catalog; three general algorithm topics retain honest source-sheet references. Existing AWS and HLD links remain usable.
 
 The initial HLD content was read across all 36 Google Docs tabs through the connected Google Docs API. Its original paragraphs and table metadata are kept in `content/raw/hld-native.json`; `npm exec -- node scripts/rebuild-native.mjs` regenerates those chapters from that preserved snapshot. Signed provider image URLs and credentials are not persisted.
 
@@ -35,7 +35,7 @@ The initial HLD content was read across all 36 Google Docs tabs through the conn
 
 Uploads, bookmarks, reading history, and progress are saved in **this browser’s local storage**. They do not sync to other devices or change the deployed website. The Sources page lets you restore a published source after a browser replacement, remove an uploaded source, and export browser imports to JSON for backup or publication. Large files can exceed browser storage; use the command-line importer for them.
 
-DOCX and PDF uploads extract text. They do not extract embedded images or preserve all document layout. Scanned PDFs require OCR before importing. Legacy `.doc` files should be exported as `.docx` first. The original AWS and HLD diagrams are bundled independently under `public/diagrams/`. AWS is rendered directly from the sanitized native Google Docs snapshot in `content/raw/aws-native.json`, preserving the original content order and inline styles instead of converting it to Markdown.
+DOCX and PDF uploads extract text. They do not extract embedded images or preserve all document layout. Scanned PDFs require OCR before importing. Legacy `.doc` files should be exported as `.docx` first. The original AWS and HLD diagrams are bundled independently under `public/diagrams/`. Original documents are rendered directly from the native snapshots registered under `nativeSnapshot` in `content/sources.json`, preserving source order and inline styles instead of converting them to Markdown. New image assets are converted to smaller WebP files only when decoded RGBA pixels are exactly identical; otherwise the original image is retained.
 
 ## Publish an updated file
 
@@ -67,7 +67,7 @@ npm run sync -- --source=aws-notes
 npm run build
 ```
 
-Sync reads configured Google Docs/Sheets sources and the public GitHub repository. AWS uses the native Google Docs API with `GOOGLE_ACCESS_TOKEN` and downloads its original images. Without that token, sync preserves the existing AWS snapshot and reports that a native refresh is required; it never silently flattens the original AWS notes into text. `npm run sync -- --local --source=aws-notes` rebuilds from the preserved original snapshot. A failed source retains its prior published content and returns a nonzero exit status; review errors before building. Large or restricted Google documents may need an exported file through the importer instead. Linked documents are **not polled automatically**. The HLD native snapshot retains tab boundaries and rich formatting. Manual text-only file replacement uses newly extracted text chapters instead. Native AWS refreshes retain source tab IDs so chapter links stay stable.
+Sync reads configured Google Docs/Sheets sources and the public GitHub repository. Original Google documents use the native Google Docs API with `GOOGLE_ACCESS_TOKEN` and downloads its original images. Without that token, sync preserves existing original snapshots and reports that a native refresh is required; it never silently flattens the original notes into text. `npm run sync -- --local --source=aws-notes` rebuilds from the preserved original snapshot. A failed source retains its prior published content and returns a nonzero exit status; review errors before building. Large or restricted Google documents may need an exported file through the importer instead. Linked documents are **not polled automatically**. The HLD native snapshot retains tab boundaries and rich formatting. Manual text-only file replacement uses newly extracted text chapters instead. Native AWS refreshes retain source tab IDs so chapter links stay stable.
 
 For private Google exports, supply `GOOGLE_ACCESS_TOKEN` in the environment with appropriate read access. An optional `GITHUB_TOKEN` increases GitHub API rate limits. Keep both server-side in your local shell or CI secret store; never prefix them with `NEXT_PUBLIC_`, put them in source files, or expose them in browser code. No credentials are required to read the already imported library.
 
@@ -88,10 +88,10 @@ Set `NEXT_PUBLIC_SITE_URL` before building when moving to a new domain. The defa
 npm run typecheck
 npm test
 npm run build
-python3 scripts/verify-aws.py
+python3 scripts/verify-originals.py
 ```
 
-The AWS verifier compares every generated original chapter with the source snapshot: complete source text, image order, table counts, image files, and existing URLs.
+The original-document verifier compares every generated original chapter with the source snapshot: complete source text, image order, table counts, image files, and existing URLs.
 
 Importer tests check source replacement, text preservation, empty-document handling, and fenced code integrity. Browser checks cover navigation, search, saved notes, completion persistence, focus mode, Microsoft problem tracking, DOCX import and replacement, PDF extraction, and mobile/desktop layouts.
 
@@ -105,3 +105,12 @@ Importer tests check source replacement, text preservation, empty-document handl
 - `public/`: favicon, social preview, PDF worker, and source diagrams.
 
 No backend, account system, database, or automatic cross-device synchronization is included. Content publication is explicit through import/sync, rebuild, and deployment.
+
+
+## Refresh the original document library
+
+`npm run rebuild:originals` rebuilds chapter metadata from all local native snapshots and reapplies verified LeetCode links. `npm run sync -- --local` refreshes from local snapshots without flattening rich documents. Google Docs native refresh requires local read credentials; the imported website does not require them. The Java Word file is preserved as `content/raw/java-original.docx`; rerun `scripts/import-java-docx.py` with Python and lxml after replacing that file, then rebuild originals. Chapter grouping is navigational: all original source sections retain their order and appear once.
+
+`node scripts/link-leetcode.mjs --check` validates the practice mapping; pass `--catalog=/absolute/path/catalog.json` to compare it with a freshly downloaded official `https://leetcode.com/api/problems/all/` catalog. Premium problems are labeled. Broader topics do not pretend to be specific LeetCode problems.
+
+LLD preserves all 161 original repository files. Its tree, separate file headers, expandable panels, line numbers, syntax highlighting, copy/download controls, and wrapping operate on the unchanged source strings.
