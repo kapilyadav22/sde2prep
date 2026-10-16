@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Workspace } from '@/components/workspace';
 import { library, origin } from '@/lib/content';
 import './globals.css';
+import '@/components/article-typography.css';
 export const metadata: Metadata = {
   metadataBase: new URL(origin),
   title: { default: 'sde2prep — A little more prepared, every day.', template: '%s | sde2prep' },
