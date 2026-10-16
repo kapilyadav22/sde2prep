@@ -114,3 +114,8 @@ No backend, account system, database, or automatic cross-device synchronization 
 `node scripts/link-leetcode.mjs --check` validates the practice mapping; pass `--catalog=/absolute/path/catalog.json` to compare it with a freshly downloaded official `https://leetcode.com/api/problems/all/` catalog. Premium problems are labeled. Broader topics do not pretend to be specific LeetCode problems.
 
 LLD preserves all 161 original repository files. Its tree, separate file headers, expandable panels, line numbers, syntax highlighting, copy/download controls, and wrapping operate on the unchanged source strings.
+
+
+### Static hosting package
+
+The post-build step retains every original note, code file, and image. Internal navigation uses regular anchors to complete pre-rendered HTML pages; hydration data is embedded in each page. Duplicate external Next client-navigation payloads are excluded from deployment, and legacy AWS URLs are lightweight canonical redirects. This keeps the original content within the host’s expanded-archive size limit. Browser imports are saved before page navigation.

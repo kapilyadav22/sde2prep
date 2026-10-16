@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState, type ReactNode } from 'react';
-import Link from 'next/link';
+import Link from '@/components/static-link';
 import { ArrowLeft, ArrowRight, Bookmark, Check, CheckCircle2, Clock3, ExternalLink, Maximize2, Minimize2, Minus, Plus, BookOpen } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';

@@ -74,5 +74,5 @@ for note in (n for n in library['notes'] if n.get('originalTabId') and n['catego
     counts['tables'] += table_count
 for old, new in aliases.items():
     html = (ROOT / 'out/notes' / old / 'index.html').read_text()
-    assert f'/notes/{new}/' in html and 'original-document' in html, f'Broken legacy URL: {old}'
+    assert f'/notes/{new}/' in html and 'http-equiv="refresh"' in html, f'Broken legacy URL: {old}'
 print(json.dumps(counts))

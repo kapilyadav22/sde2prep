@@ -1,6 +1,6 @@
 'use client';
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import Link from '@/components/static-link';
+import { usePathname } from 'next/navigation';
 import { createContext, useContext, useState, useEffect, useRef, useCallback, type ReactNode } from 'react';
 import { LayoutDashboard, Braces, Blocks, Network, Cloud, Folder, Bookmark, Search, ArrowUpRight, ArrowRight, Plus, ChevronRight, X, FileText, Upload, Check, CheckCircle2, Clock3, BookOpen, PanelLeftClose, Menu, Command, Github, RefreshCw, Download, ExternalLink, CheckCheck, SlidersHorizontal, Layers, Sun, GraduationCap, Database, GitFork, Leaf, Workflow, FlaskConical } from 'lucide-react';
 import type { Category, Note, Source, Problem } from '@/lib/types';
@@ -20,7 +20,7 @@ export function noteHref(note: Note) { return note.local ? `/reading/?id=${encod
 export function Workspace({ children, initialNotes, initialSources, problems }: { children: ReactNode; initialNotes: Note[]; initialSources: Source[]; problems: Problem[] }) {
   const [user,setUser]=useState<UserData>(empty); const [ready,setReady]=useState(false);
   const [query,setQuery]=useState(''); const [importing,setImporting]=useState(false); const [sourceId,setSourceId]=useState(''); const [mobile,setMobile]=useState(false); const [toast,setToast]=useState('');
-  const pathname=usePathname(); const router=useRouter(); const searchRef=useRef<HTMLInputElement>(null);
+  const pathname=usePathname(); const searchRef=useRef<HTMLInputElement>(null);
   useEffect(()=>{try {const value=JSON.parse(localStorage.getItem('sde2prep-v1')||'null');if(value && Array.isArray(value.notes) && Array.isArray(value.sources) && Array.isArray(value.saved) && Array.isArray(value.completed) && Array.isArray(value.recent) && Array.isArray(value.solved)){const aliases=noteAliases as Record<string,string>;for(const key of ['saved','completed','recent'])value[key]=[...new Set((value[key] as string[]).map(id=>aliases[id]||id))];setUser(value);}}catch{}setReady(true);},[]);
   useEffect(()=>{if(!ready)return;try{localStorage.setItem('sde2prep-v1',JSON.stringify(user));}catch{setToast('Browser storage is full or unavailable. Export your library to keep a backup.');}},[user,ready]);
   useEffect(()=>{setMobile(false);setQuery('');},[pathname]);
@@ -61,7 +61,7 @@ export function Workspace({ children, initialNotes, initialSources, problems }: 
       <main id="main" className="main-content">{children}</main>
       <footer className="footer"><span><span className="footer-mark">✳</span> A little more prepared, every day.</span><span>Made for the journey to SDE 2 <span className="footer-dot">•</span> sde2prep</span></footer>
     </div>
-    {importing&&<ImportDialog sources={sources} selected={sourceId} defaultCategory={category?.id} onClose={()=>setImporting(false)} onImport={(source,imported)=>{setUser(u=>({...u,sources:[...u.sources.filter(s=>s.id!==source.id),source],notes:[...u.notes.filter(n=>n.sourceId!==source.id),...imported]}));setImporting(false);setToast(`${imported.length} notes imported. Saved in this browser.`);router.push(`/${source.category}/`);}}/>}
+    {importing&&<ImportDialog sources={sources} selected={sourceId} defaultCategory={category?.id} onClose={()=>setImporting(false)} onImport={(source,imported)=>{const updated={...user,sources:[...user.sources.filter(s=>s.id!==source.id),source],notes:[...user.notes.filter(n=>n.sourceId!==source.id),...imported]};try{localStorage.setItem('sde2prep-v1',JSON.stringify(updated));setUser(updated);setImporting(false);window.location.assign(`/${source.category}/`);}catch{setToast('Browser storage is full. Export or remove a browser import before adding this document.');}}}/>}
     {toast&&<div className="toast" role="status"><CheckCircle2 size={19}/>{toast}<button className="icon-button" aria-label="Dismiss" onClick={()=>setToast('')}><X size={16}/></button></div>}
   </WorkspaceContext.Provider>;
 }

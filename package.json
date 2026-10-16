@@ -12,7 +12,8 @@
     "test": "node --test scripts/content.test.mjs",
     "postinstall": "node scripts/copy-worker.mjs",
     "rebuild:originals": "node scripts/rebuild-originals.mjs",
-    "verify:originals": "python3 scripts/verify-originals.py"
+    "verify:originals": "python3 scripts/verify-originals.py",
+    "postbuild": "node scripts/finalize-static.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",

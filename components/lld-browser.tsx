@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import Link from 'next/link';
+import Link from '@/components/static-link';
 import { ArrowRight, Check, ChevronRight, Code2, FileCode2, FileText, Folder, FolderOpen, Github, Layers, Plus, Search } from 'lucide-react';
 import { useWorkspace, noteHref } from './workspace';
 import { buildLldTree, commonFolder, fileLanguage, isCodeFile, lldFileId, type LldChapterManifest, type LldTree } from '@/lib/lld-source';

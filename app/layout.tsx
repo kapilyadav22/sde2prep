@@ -11,5 +11,5 @@ export const metadata: Metadata = {
   twitter: {card:'summary_large_image'},
 };
 export default function RootLayout({children}:{children:React.ReactNode}) {
-  return <html lang="en"><body><Workspace initialNotes={library.notes.map(({content,...n})=>({...n,content:''}))} initialSources={library.sources} problems={library.problems}>{children}</Workspace></body></html>;
+  return <html lang="en"><body><Workspace initialNotes={library.notes.map(n=>({id:n.id,title:n.title,category:n.category,sourceId:n.sourceId,description:n.description,minutes:n.minutes,updatedAt:n.updatedAt,tags:n.tags,content:''}))} initialSources={library.sources} problems={library.problems}>{children}</Workspace></body></html>;
 }
