@@ -1,6 +1,36 @@
 [
-  {"id":"aws-notes","title":"AWS interview notes","category":"aws","type":"Google Docs","url":"https://docs.google.com/document/d/1Y73-KrCYf_DtSDfnkTBl53zq67eDbFSm0bTI14ShgRc/edit","file":"raw/aws.txt"},
-  {"id":"hld-notes","title":"High-level system design","category":"hld","type":"Google Docs","url":"https://docs.google.com/document/d/1vSlU2wx8SfCXvmP0Os_gcIBG1DkyelRt4q3KmbgzpzQ/edit","file":"raw/hld.txt"},
-  {"id":"microsoft-dsa","title":"Microsoft interview preparation","category":"dsa","type":"Google Sheets","url":"https://docs.google.com/spreadsheets/d/1QkQOkeXymivJ7_lWMJrZyiW3rrj3Cl-7y8Ysf-uNw6Q/edit","file":"raw/microsoft.txt"},
-  {"id":"ms-lld","title":"MS LLD design collection","category":"lld","type":"GitHub","url":"https://github.com/kapilyadav22/MS_LLD","repository":"kapilyadav22/MS_LLD","branch":"master"}
+  {
+    "id": "aws-notes",
+    "title": "AWS interview notes",
+    "category": "aws",
+    "type": "Google Docs",
+    "url": "https://docs.google.com/document/d/1Y73-KrCYf_DtSDfnkTBl53zq67eDbFSm0bTI14ShgRc/edit",
+    "file": "raw/aws.txt",
+    "nativeSnapshot": "raw/aws-native.json"
+  },
+  {
+    "id": "hld-notes",
+    "title": "High-level system design",
+    "category": "hld",
+    "type": "Google Docs",
+    "url": "https://docs.google.com/document/d/1vSlU2wx8SfCXvmP0Os_gcIBG1DkyelRt4q3KmbgzpzQ/edit",
+    "file": "raw/hld.txt"
+  },
+  {
+    "id": "microsoft-dsa",
+    "title": "Microsoft interview preparation",
+    "category": "dsa",
+    "type": "Google Sheets",
+    "url": "https://docs.google.com/spreadsheets/d/1QkQOkeXymivJ7_lWMJrZyiW3rrj3Cl-7y8Ysf-uNw6Q/edit",
+    "file": "raw/microsoft.txt"
+  },
+  {
+    "id": "ms-lld",
+    "title": "MS LLD design collection",
+    "category": "lld",
+    "type": "GitHub",
+    "url": "https://github.com/kapilyadav22/MS_LLD",
+    "repository": "kapilyadav22/MS_LLD",
+    "branch": "master"
+  }
 ]

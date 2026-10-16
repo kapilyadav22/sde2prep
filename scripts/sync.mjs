@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { makeNotes, replaceSource, slug } from './content.mjs';
+import { notesFromNative } from './native-content.mjs';
 const root = fileURLToPath(new URL('../',import.meta.url));
 const contentDir = path.join(root,'content');
 const config = JSON.parse(await fs.readFile(path.join(contentDir,'sources.json'),'utf8'));
@@ -12,7 +13,7 @@ try { library=JSON.parse(await fs.readFile(path.join(contentDir,'library.json'),
 async function fetchText(url) {
   const headers = {'User-Agent':'sde2prep-content-importer'};
   if (process.env.GITHUB_TOKEN && new URL(url).hostname === 'api.github.com') headers.Authorization=`Bearer ${process.env.GITHUB_TOKEN}`;
-  if (process.env.GOOGLE_ACCESS_TOKEN && new URL(url).hostname === 'www.googleapis.com') headers.Authorization=`Bearer ${process.env.GOOGLE_ACCESS_TOKEN}`;
+  if (process.env.GOOGLE_ACCESS_TOKEN && ['www.googleapis.com','docs.googleapis.com'].includes(new URL(url).hostname)) headers.Authorization=`Bearer ${process.env.GOOGLE_ACCESS_TOKEN}`;
   const res=await fetch(url,{headers,signal:AbortSignal.timeout(120000)});
   if (!res.ok) throw new Error(`Source download returned HTTP ${res.status}. Check sharing/access.`);
   const text=await res.text();
@@ -89,7 +90,26 @@ for(const configured of config.filter(s=>!selected || s.id===selected)){
   const source={...configured,updatedAt:new Date().toISOString(),status:'Imported'};
   try {
     let notes;
-    if(source.type==='GitHub') notes=await githubNotes(source);
+    if(source.nativeSnapshot){
+      let snapshot;
+      if(local) snapshot=JSON.parse(await fs.readFile(path.join(contentDir,source.nativeSnapshot),'utf8'));
+      else {
+        if(!process.env.GOOGLE_ACCESS_TOKEN)throw Error('Native document refresh requires GOOGLE_ACCESS_TOKEN with Docs read access. The current original layout and diagrams were kept; plain-text export is disabled for this source.');
+        const id=source.url.match(/\/d\/([^/]+)/)[1];
+        const resource=JSON.parse(await fetchText(`https://docs.googleapis.com/v1/documents/${id}?includeTabsContent=true`));
+        const tabs=[];const flatten=items=>{for(const t of items||[]){tabs.push({tabId:t.tabProperties.tabId,title:t.tabProperties.title,...t.documentTab});flatten(t.childTabs);}};flatten(resource.tabs);snapshot={documentId:resource.documentId,title:resource.title,tabs};
+        const jobs=[];
+        for(const tab of tabs)for(const [imageId,item] of Object.entries(tab.inlineObjects||{})){
+          const image=item.inlineObjectProperties?.embeddedObject;const url=image?.imageProperties?.contentUri;
+          if(url){const name=('aws-'+tab.tabId+'-'+imageId).replace(/[^a-z0-9-]/gi,'-')+'.png';jobs.push({url,name});image.imageProperties={localPath:'/diagrams/'+name};}
+        }
+        await fs.mkdir(path.join(root,'public/diagrams'),{recursive:true});
+        for(let i=0;i<jobs.length;i+=6)await Promise.all(jobs.slice(i,i+6).map(async j=>{const res=await fetch(j.url,{signal:AbortSignal.timeout(60000)});if(!res.ok||!res.headers.get('content-type')?.startsWith('image/'))throw Error('Could not retrieve a source diagram. The previous published content was preserved.');await fs.writeFile(path.join(root,'public/diagrams',j.name),Buffer.from(await res.arrayBuffer()));}));
+        await fs.writeFile(path.join(contentDir,source.nativeSnapshot),JSON.stringify(snapshot));
+      }
+      notes=notesFromNative(snapshot,source);
+    }
+    else if(source.type==='GitHub') notes=await githubNotes(source);
     else {
       let text;
       if(local) text=await fs.readFile(path.join(contentDir,source.file),'utf8');

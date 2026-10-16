@@ -22,7 +22,7 @@ Open http://localhost:3000. The built website is in `out/` and can be hosted on 
 
 ## Your content
 
-`content/library.json` is the published content snapshot. `content/sources.json` registers your four supplied sources. The initial snapshot contains 139 chapters: 63 AWS, 36 HLD, 36 LLD, and four DSA notebook chapters, alongside **145 primary Microsoft DSA problems**. HLD headings, native tables, callouts, and 347 embedded diagrams are included. The original links remain available on notes and the Sources page.
+`content/library.json` is the published content snapshot. `content/sources.json` registers your four supplied sources. The current snapshot contains 105 chapters: 29 original AWS document tabs, 36 HLD, 36 LLD, and four DSA notebook chapters, alongside **145 primary Microsoft DSA problems**. AWS preserves the original text, 136 diagrams, 416 tables, headings, nested lists, and inline formatting. HLD includes native tables, callouts, and 347 embedded diagrams. Existing AWS URLs remain available as canonical aliases; bookmarks and progress migrate to the corresponding original chapter. The original links remain available on notes and the Sources page.
 
 The initial HLD content was read across all 36 Google Docs tabs through the connected Google Docs API. Its original paragraphs and table metadata are kept in `content/raw/hld-native.json`; `npm exec -- node scripts/rebuild-native.mjs` regenerates those chapters from that preserved snapshot. Signed provider image URLs and credentials are not persisted.
 
@@ -35,7 +35,7 @@ The initial HLD content was read across all 36 Google Docs tabs through the conn
 
 Uploads, bookmarks, reading history, and progress are saved in **this browser’s local storage**. They do not sync to other devices or change the deployed website. The Sources page lets you restore a published source after a browser replacement, remove an uploaded source, and export browser imports to JSON for backup or publication. Large files can exceed browser storage; use the command-line importer for them.
 
-DOCX and PDF uploads extract text. They do not extract embedded images or preserve all document layout. Scanned PDFs require OCR before importing. Legacy `.doc` files should be exported as `.docx` first. The initial HLD diagrams are bundled independently under `public/diagrams/`.
+DOCX and PDF uploads extract text. They do not extract embedded images or preserve all document layout. Scanned PDFs require OCR before importing. Legacy `.doc` files should be exported as `.docx` first. The original AWS and HLD diagrams are bundled independently under `public/diagrams/`. AWS is rendered directly from the sanitized native Google Docs snapshot in `content/raw/aws-native.json`, preserving the original content order and inline styles instead of converting it to Markdown.
 
 ## Publish an updated file
 
@@ -67,7 +67,7 @@ npm run sync -- --source=aws-notes
 npm run build
 ```
 
-Sync reads the configured public Google Docs/Sheets export links and the public GitHub repository. A failed source retains its prior published content and returns a nonzero exit status; review errors before building. Large or restricted Google documents may need an exported file through the importer instead. Linked documents are **not polled automatically**. The HLD native snapshot retains tab boundaries and rich formatting; a plain-text sync or file replacement uses newly extracted text chapters instead.
+Sync reads configured Google Docs/Sheets sources and the public GitHub repository. AWS uses the native Google Docs API with `GOOGLE_ACCESS_TOKEN` and downloads its original images. Without that token, sync preserves the existing AWS snapshot and reports that a native refresh is required; it never silently flattens the original AWS notes into text. `npm run sync -- --local --source=aws-notes` rebuilds from the preserved original snapshot. A failed source retains its prior published content and returns a nonzero exit status; review errors before building. Large or restricted Google documents may need an exported file through the importer instead. Linked documents are **not polled automatically**. The HLD native snapshot retains tab boundaries and rich formatting. Manual text-only file replacement uses newly extracted text chapters instead. Native AWS refreshes retain source tab IDs so chapter links stay stable.
 
 For private Google exports, supply `GOOGLE_ACCESS_TOKEN` in the environment with appropriate read access. An optional `GITHUB_TOKEN` increases GitHub API rate limits. Keep both server-side in your local shell or CI secret store; never prefix them with `NEXT_PUBLIC_`, put them in source files, or expose them in browser code. No credentials are required to read the already imported library.
 
@@ -88,7 +88,10 @@ Set `NEXT_PUBLIC_SITE_URL` before building when moving to a new domain. The defa
 npm run typecheck
 npm test
 npm run build
+python3 scripts/verify-aws.py
 ```
+
+The AWS verifier compares every generated original chapter with the source snapshot: complete source text, image order, table counts, image files, and existing URLs.
 
 Importer tests check source replacement, text preservation, empty-document handling, and fenced code integrity. Browser checks cover navigation, search, saved notes, completion persistence, focus mode, Microsoft problem tracking, DOCX import and replacement, PDF extraction, and mobile/desktop layouts.
 

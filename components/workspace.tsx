@@ -6,6 +6,7 @@ import { LayoutDashboard, Braces, Blocks, Network, Cloud, Folder, Bookmark, Sear
 import type { Category, Note, Source, Problem } from '@/lib/types';
 import { categories } from '@/lib/config';
 import { makeNotes } from '@/scripts/content.mjs';
+import noteAliases from '@/content/note-aliases.json';
 
 const icons = { dsa: Braces, lld: Blocks, hld: Network, aws: Cloud, other: Folder };
 type UserData = { saved: string[]; completed: string[]; recent: string[]; solved: string[]; notes: Note[]; sources: Source[] };
@@ -19,7 +20,7 @@ export function Workspace({ children, initialNotes, initialSources, problems }: 
   const [user,setUser]=useState<UserData>(empty); const [ready,setReady]=useState(false);
   const [query,setQuery]=useState(''); const [importing,setImporting]=useState(false); const [sourceId,setSourceId]=useState(''); const [mobile,setMobile]=useState(false); const [toast,setToast]=useState('');
   const pathname=usePathname(); const router=useRouter(); const searchRef=useRef<HTMLInputElement>(null);
-  useEffect(()=>{try {const value=JSON.parse(localStorage.getItem('sde2prep-v1')||'null');if(value && Array.isArray(value.notes) && Array.isArray(value.sources) && Array.isArray(value.saved) && Array.isArray(value.completed) && Array.isArray(value.recent) && Array.isArray(value.solved))setUser(value);}catch{}setReady(true);},[]);
+  useEffect(()=>{try {const value=JSON.parse(localStorage.getItem('sde2prep-v1')||'null');if(value && Array.isArray(value.notes) && Array.isArray(value.sources) && Array.isArray(value.saved) && Array.isArray(value.completed) && Array.isArray(value.recent) && Array.isArray(value.solved)){const aliases=noteAliases as Record<string,string>;for(const key of ['saved','completed','recent'])value[key]=[...new Set((value[key] as string[]).map(id=>aliases[id]||id))];setUser(value);}}catch{}setReady(true);},[]);
   useEffect(()=>{if(!ready)return;try{localStorage.setItem('sde2prep-v1',JSON.stringify(user));}catch{setToast('Browser storage is full or unavailable. Export your library to keep a backup.');}},[user,ready]);
   useEffect(()=>{setMobile(false);setQuery('');},[pathname]);
   useEffect(()=>{const handler=(event:KeyboardEvent)=>{if((event.metaKey||event.ctrlKey)&&event.key==='k'){event.preventDefault();searchRef.current?.focus();}if(event.key==='Escape'){setImporting(false);setQuery('');setMobile(false);}};window.addEventListener('keydown',handler);return()=>window.removeEventListener('keydown',handler);},[]);
