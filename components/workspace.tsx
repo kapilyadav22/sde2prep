@@ -94,14 +94,352 @@ export function NoteCard({note}:{note:Note}){const {user,toggle}=useWorkspace();
 
 function ArchitectureArt(){return <div className="architecture-art" aria-hidden="true"><div className="art-grid"/><span className="art-orbit orbit-one"/><span className="art-orbit orbit-two"/><div className="art-node art-user"><Braces size={26}/></div><span className="art-line line-one"/><div className="art-node art-network"><Network size={26}/><small>DESIGN</small></div><span className="art-line line-two"/><div className="art-node art-cloud"><Cloud size={25}/></div><span className="art-line line-three"/><div className="art-node art-db"><Layers size={22}/></div><div className="art-spark spark-one">✳</div><div className="art-spark spark-two">+</div><div className="art-code"><span/>const next = <b>you.levelUp()</b>;</div></div>;}
 
+const collectionMeta: Record<Category, { badge: string; tags: string[] }> = {
+  hld: { badge: '36 CHAPTERS', tags: ['System Design', 'Scaling', 'Caching', 'DB Sharding'] },
+  lld: { badge: '161 FILES', tags: ['Design Patterns', 'SOLID', 'Java & C++', 'Clean Architecture'] },
+  dsa: { badge: '25 PROBLEMS', tags: ['Microsoft Focus', 'Dynamic Programming', 'Graphs', 'Trees'] },
+  aws: { badge: '29 SERVICES', tags: ['VPC & Security', 'EC2 & S3', 'DynamoDB', 'Microservices'] },
+  redis: { badge: '7 CHAPTERS', tags: ['Distributed Locks', 'TTL & Eviction', 'Pub/Sub', 'Clustering'] },
+  multithreading: { badge: '10 CHAPTERS', tags: ['Java Concurrency', 'ThreadPoolExecutor', 'Locks & Sync'] },
+  springboot: { badge: '27 CHAPTERS', tags: ['Framework Internals', 'Bean Lifecycle', 'Auto-Configuration'] },
+  kafka: { badge: '6 CHAPTERS', tags: ['Event Streaming', 'Partitions', 'Consumer Groups', 'Brokers'] },
+  testing: { badge: '4 CHAPTERS', tags: ['JUnit 5 & Mockito', 'Unit Testing', 'Mock Injections'] },
+  other: { badge: 'EXPLORE', tags: ['Curated Insights', 'Study Notes'] },
+};
+
 export function Dashboard(){
   const {notes,user,problems}=useWorkspace();
   const recent=user.recent.map(id=>notes.find(n=>n.id===id)).filter(Boolean) as Note[];
-  return <><div className="page-heading"><div><h1>Interview preparation</h1><p>Notes, code, and practice problems.</p></div><Link className="button primary" href={recent[0]?noteHref(recent[0]):'/library/'}>{recent[0]?'Continue reading':'Browse notes'}<ArrowRight size={16}/></Link></div>
-    <div className="stat-strip"><div><span className="stat-icon"><FileText size={19}/></span><strong>{notes.length}</strong><span>Notes</span></div><div><span className="stat-icon"><Braces size={19}/></span><strong>{problems.filter(p=>user.solved.includes(p.id)).length} / {problems.length}</strong><span>Problems solved</span></div><div><span className="stat-icon"><CheckCircle2 size={19}/></span><strong>{notes.filter(n=>user.completed.includes(n.id)).length}</strong><span>Notes completed</span></div><div><span className="stat-icon"><Bookmark size={19}/></span><strong>{notes.filter(n=>user.saved.includes(n.id)).length}</strong><span>Saved notes</span></div></div>
-    <section className="collections-section"><div className="section-heading"><h2>Collections</h2><Link href="/library/" className="text-link">All notes<ArrowUpRight size={15}/></Link></div><div className="collection-grid">{categories.map(c=>{const count=notes.filter(n=>n.category===c.id).length;return <Link key={c.id} className={`collection-card ${c.id}`} href={`/${c.id}/`}><div className="collection-card-top"><span className="collection-icon"><CategoryIcon id={c.id} size={25}/></span><ArrowUpRight className="collection-arrow" size={19}/></div><h3>{c.label}</h3><p>{c.name}</p><div className="collection-card-bottom"><span>{c.id==='dsa'?`${problems.length} problems`:`${count} notes`}</span></div></Link>;})}<Link className="collection-card handwritten" href="/handwritten/"><div className="collection-card-top"><span className="collection-icon"><FileText size={25}/></span><ArrowUpRight size={19}/></div><h3>Handwritten</h3><p>PDFs & articles</p><div className="collection-card-bottom"><span>Open files</span></div></Link></div></section>
-    {recent.length>0&&<section className="recent-section"><div className="section-heading"><h2>Recently opened</h2></div><div className="recent-list">{recent.slice(0,5).map(n=><Link href={noteHref(n)} key={n.id} className="recent-note"><span className={`recent-note-icon ${n.category}`}><CategoryIcon id={n.category} size={21}/></span><div><h3>{n.title}</h3><p>{n.category.toUpperCase()} · {n.minutes} min read</p></div><ArrowUpRight size={17}/></Link>)}</div></section>}
-  </>;
+
+  // Curated high-yield architecture chapters for SDE 2 interviews
+  const highYieldSlugs = [
+    'hld-notes-t-2x0ms32xl9nw',
+    'hld-notes-t-attd6lhp8ubr',
+    'hld-notes-t-zc2e3vmnwi65',
+    'aws-original-t-0',
+    'redis-notes-t-0',
+    'java-multithreading-1',
+  ];
+  const highYieldNotes: Note[] = [];
+  for (const s of highYieldSlugs) {
+    const found = notes.find(n => n.id === s || n.id.includes(s));
+    if (found && !highYieldNotes.some(h => h.id === found.id)) highYieldNotes.push(found);
+  }
+  if (highYieldNotes.length < 5) {
+    for (const cat of ['hld', 'aws', 'redis', 'multithreading', 'springboot'] as Category[]) {
+      const fallback = notes.find(n => n.category === cat && !highYieldNotes.some(h => h.id === n.id));
+      if (fallback) highYieldNotes.push(fallback);
+    }
+  }
+
+  const solvedCount = problems.filter(p => user.solved.includes(p.id)).length;
+  const completedCount = notes.filter(n => user.completed.includes(n.id)).length;
+  const savedCount = notes.filter(n => user.saved.includes(n.id)).length;
+  const solvedPercent = problems.length ? Math.round((solvedCount / problems.length) * 100) : 0;
+
+  const roadmapMilestones = [
+    {
+      phase: '01',
+      title: 'Data Structures & Algorithms',
+      desc: 'Microsoft interview focus list (DP, Graphs, Trees, Arrays)',
+      href: '/dsa/',
+      count: `${solvedCount}/${problems.length} solved`,
+      done: solvedCount > 0 && solvedCount === problems.length,
+    },
+    {
+      phase: '02',
+      title: 'Low-Level Design & Code Craft',
+      desc: '161 complete implementation files, SOLID principles & GoF patterns',
+      href: '/lld/',
+      count: '161 files',
+      done: false,
+    },
+    {
+      phase: '03',
+      title: 'High-Level System Design',
+      desc: 'Scalability, Caching, DB Sharding, URL Shortener, and Rate Limiter',
+      href: '/hld/',
+      count: '36 chapters',
+      done: false,
+    },
+    {
+      phase: '04',
+      title: 'Enterprise Backend & Cloud',
+      desc: 'AWS Cloud architecture, Spring Boot internals, Redis cache & Kafka',
+      href: '/aws/',
+      count: '69 chapters',
+      done: false,
+    },
+    {
+      phase: '05',
+      title: 'Production Testing & Reliability',
+      desc: 'JUnit 5 & Mockito best practices, fault tolerance and assertions',
+      href: '/testing/',
+      count: '4 chapters',
+      done: false,
+    },
+  ];
+
+  return (
+    <>
+      {/* 1. Showstopper Hero Banner */}
+      <section className="hero-banner" aria-label="Welcome banner">
+        <div className="hero-ambient-glow" aria-hidden="true" />
+        <div className="hero-copy">
+          <div className="hero-eyebrow">
+            <span className="pulse-dot" />
+            <span>SDE 2 INTERVIEW WORKSPACE · KAPIL YADAV</span>
+          </div>
+          <h2>A little learning. <em>A big leap.</em></h2>
+          <p>
+            Your comprehensive engineering interview vault. Master High-Level System Design, Low-Level Architecture, Cloud Engineering, Redis Caching, and Java Concurrency with 159+ chapters and 25 targeted Microsoft DSA practice problems.
+          </p>
+          <div className="hero-actions">
+            <Link className="button hero-button-primary" href={recent[0] ? noteHref(recent[0]) : '/hld/'}>
+              {recent[0] ? 'Continue reading' : 'Explore System Design'}
+              <ArrowRight size={16} />
+            </Link>
+            <Link className="button hero-button-secondary" href="/dsa/">
+              <Braces size={16} />
+              <span>Microsoft DSA Track</span>
+            </Link>
+            <Link className="button hero-button-ghost" href="/library/">
+              <BookOpen size={16} />
+              <span>All 159+ Notes</span>
+            </Link>
+          </div>
+          <div className="hero-badges">
+            <span className="hero-pill"><Check size={13} /> 159 In-depth chapters</span>
+            <span className="hero-pill"><Check size={13} /> 161 LLD implementations</span>
+            <span className="hero-pill"><Check size={13} /> 25 Microsoft DSA problems</span>
+          </div>
+        </div>
+        <ArchitectureArt />
+      </section>
+
+      {/* 2. Executive Stat Cards */}
+      <div className="stat-grid">
+        <Link href="/library/" className="stat-card">
+          <div className="stat-card-header">
+            <span className="stat-icon-wrap icon-green"><BookOpen size={20} /></span>
+            <span className="stat-badge">9 DOMAINS</span>
+          </div>
+          <div className="stat-card-body">
+            <strong>{notes.length}</strong>
+            <span>Study notes &amp; chapters</span>
+          </div>
+          <div className="stat-card-footer">
+            <span>Verified engineering notes</span>
+            <ArrowUpRight size={14} />
+          </div>
+        </Link>
+
+        <Link href="/dsa/" className="stat-card">
+          <div className="stat-card-header">
+            <span className="stat-icon-wrap icon-blue"><Braces size={20} /></span>
+            <span className="stat-badge">{solvedPercent}% DONE</span>
+          </div>
+          <div className="stat-card-body">
+            <strong>{solvedCount} <span className="stat-total">/ {problems.length}</span></strong>
+            <span>Microsoft DSA solved</span>
+          </div>
+          <div className="stat-progress-bar">
+            <span style={{ width: `${solvedPercent}%` }} />
+          </div>
+        </Link>
+
+        <Link href="/library/" className="stat-card">
+          <div className="stat-card-header">
+            <span className="stat-icon-wrap icon-emerald"><CheckCircle2 size={20} /></span>
+            <span className="stat-badge">REVISION</span>
+          </div>
+          <div className="stat-card-body">
+            <strong>{completedCount}</strong>
+            <span>Notes completed</span>
+          </div>
+          <div className="stat-card-footer">
+            <span>Mark chapters as you read</span>
+            <ArrowUpRight size={14} />
+          </div>
+        </Link>
+
+        <Link href="/bookmarks/" className="stat-card">
+          <div className="stat-card-header">
+            <span className="stat-icon-wrap icon-purple"><Bookmark size={20} /></span>
+            <span className="stat-badge">FAST RECALL</span>
+          </div>
+          <div className="stat-card-body">
+            <strong>{savedCount}</strong>
+            <span>Bookmarked notes</span>
+          </div>
+          <div className="stat-card-footer">
+            <span>Quick revision before interviews</span>
+            <ArrowUpRight size={14} />
+          </div>
+        </Link>
+      </div>
+
+      {/* 3. Microsoft DSA Spotlight Banner */}
+      <div className="microsoft-banner">
+        <div className="ms-logo" aria-hidden="true">
+          <i /><i /><i /><i />
+        </div>
+        <div className="ms-content">
+          <span className="eyebrow"><span className="little-dot" />TARGET COMPANY FOCUS</span>
+          <h2>Microsoft Interview Focus · DSA Practice Track</h2>
+          <p>25 curated interview problems spanning Dynamic Programming, Graphs, Trees, Arrays, and Strings with direct LeetCode integration.</p>
+        </div>
+        <div className="ms-meta">
+          <div className="practice-progress">
+            <strong>{solvedCount}<span> / {problems.length}</span></strong>
+            <small>solved ({solvedPercent}%)</small>
+            <div className="progress-track">
+              <span style={{ width: `${solvedPercent}%` }} />
+            </div>
+          </div>
+          <Link href="/dsa/" className="button primary">
+            Practice problems <ArrowRight size={15} />
+          </Link>
+        </div>
+      </div>
+
+      {/* 4. Rich Curated Collections Grid */}
+      <section className="collections-section">
+        <div className="section-heading">
+          <div>
+            <h2>Engineering Collections</h2>
+            <p>10 specialized curriculum tracks curated for senior engineering roles</p>
+          </div>
+          <Link href="/library/" className="text-link">
+            All notes <ArrowUpRight size={15} />
+          </Link>
+        </div>
+        <div className="collection-grid">
+          {categories.map(c => {
+            const count = notes.filter(n => n.category === c.id).length;
+            const meta = collectionMeta[c.id] || { badge: `${count} NOTES`, tags: ['Study Notes'] };
+            return (
+              <Link key={c.id} className={`collection-card ${c.id}`} href={`/${c.id}/`}>
+                <div className="collection-card-top">
+                  <span className="collection-icon">
+                    <CategoryIcon id={c.id} size={22} />
+                  </span>
+                  <span className="collection-badge">{c.id === 'dsa' ? `${problems.length} PROBLEMS` : meta.badge}</span>
+                  <ArrowUpRight className="collection-arrow" size={18} />
+                </div>
+                <h3>{c.label}</h3>
+                <p>{c.description || c.name}</p>
+                <div className="collection-tags">
+                  {meta.tags.slice(0, 3).map((tag, idx) => (
+                    <span key={idx} className="collection-tag">{tag}</span>
+                  ))}
+                </div>
+              </Link>
+            );
+          })}
+          <Link className="collection-card handwritten" href="/handwritten/">
+            <div className="collection-card-top">
+              <span className="collection-icon">
+                <FileText size={22} />
+              </span>
+              <span className="collection-badge">LIVE FOLDER</span>
+              <ArrowUpRight className="collection-arrow" size={18} />
+            </div>
+            <h3>Handwritten</h3>
+            <p>Original sketches, PDFs, architectural drawings, and reading room.</p>
+            <div className="collection-tags">
+              <span className="collection-tag">PDF Viewer</span>
+              <span className="collection-tag">Original Diagrams</span>
+              <span className="collection-tag">Study Sketches</span>
+            </div>
+          </Link>
+        </div>
+      </section>
+
+      {/* 5. Two-Column Interactive Hub (Recent / High-Yield & Preparation Journey) */}
+      <div className="dashboard-columns">
+        <div className="dashboard-column-left">
+          <div className="section-heading">
+            <div>
+              <h2>{recent.length > 0 ? 'Recently opened notes' : 'High-yield architecture reads'}</h2>
+              <p>{recent.length > 0 ? 'Pick up right where you left off' : 'Core foundation chapters for system design and architecture'}</p>
+            </div>
+            <Link href="/library/" className="text-link">
+              All {notes.length} notes <ArrowUpRight size={15} />
+            </Link>
+          </div>
+
+          <div className="recent-list">
+            {(recent.length > 0 ? recent.slice(0, 5) : highYieldNotes.slice(0, 5)).map(n => (
+              <Link href={noteHref(n)} key={n.id} className="recent-note">
+                <span className={`recent-note-icon ${n.category}`}>
+                  <CategoryIcon id={n.category} size={20} />
+                </span>
+                <div className="recent-note-info">
+                  <h3>{n.title}</h3>
+                  <p>
+                    <span className={`cat-pill ${n.category}`}>{n.category.toUpperCase()}</span>
+                    <span>·</span>
+                    <span><Clock3 size={12} /> {n.minutes} min read</span>
+                    {user.completed.includes(n.id) && (
+                      <>
+                        <span>·</span>
+                        <span style={{ color: 'var(--green)', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                          <Check size={12} /> Completed
+                        </span>
+                      </>
+                    )}
+                  </p>
+                </div>
+                <ArrowUpRight size={16} className="recent-note-arrow" />
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        <div className="dashboard-column-right">
+          <div className="section-heading">
+            <div>
+              <h2>Preparation milestones</h2>
+              <p>5 structured phases for SDE 2 readiness</p>
+            </div>
+            <Link href="/dsa/" className="text-link">
+              Practice track <ArrowUpRight size={15} />
+            </Link>
+          </div>
+
+          <div className="journey-card">
+            <div className="journey-title">
+              <span aria-hidden="true">🎯</span>
+              <div>
+                <h2>SDE 2 Interview Track</h2>
+                <p>Structured from fundamental intuition to production scale.</p>
+              </div>
+            </div>
+
+            <div className="journey-steps">
+              {roadmapMilestones.map((s, idx) => (
+                <Link href={s.href} key={idx} className={`journey-step ${s.done ? 'done' : ''}`}>
+                  <span className="step-number">{s.phase}</span>
+                  <div className="step-info">
+                    <strong>{s.title}</strong>
+                    <small>{s.desc}</small>
+                  </div>
+                  <span className="step-count">{s.count}</span>
+                  <ChevronRight size={15} className="step-chevron" />
+                </Link>
+              ))}
+            </div>
+
+            <div className="journey-footer">
+              <span>Personal progress saved automatically</span>
+              <Link href="/library/" className="text-link">Explore all <ArrowRight size={12} /></Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
 }
 
 export function LibraryView({category,saved=false}:{category?:Category;saved?:boolean}){

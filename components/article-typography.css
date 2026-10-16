@@ -1,12 +1,13 @@
 /* Imported notes share the reader's type scale; source emphasis and flow remain. */
 .reader-layout {
-  max-width: 1180px;
-  margin-inline: auto;
+  width: 100%;
+  max-width: none;
+  margin: 0;
 }
 
 .reader-article {
   width: 100%;
-  max-width: 54rem;
+  max-width: none;
 }
 
 .reader-article > h1 {
@@ -249,8 +250,9 @@
 
 @media (max-width: 950px) {
   .reader-article {
-    max-width: 52rem;
-    margin-inline: auto;
+    max-width: none;
+    width: 100%;
+    margin-inline: 0;
   }
 }
 
