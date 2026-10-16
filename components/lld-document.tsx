@@ -62,7 +62,7 @@ export function LLDDocument({ files }: { files: LldSourceFile[] }) {
 
   if (!files.length) return null;
   return <section className={styles.document} aria-label="Original implementation files">
-    <div className={styles.introduction}><span className={styles.introIcon}><Code2 size={21} /></span><div><strong>Explore the implementation</strong><p>{files.length} original {files.length === 1 ? 'file' : 'files'}{languages.length ? ` · ${languages.join(' & ')}` : ''} · Original folder structure</p></div></div>
+    <div className={styles.introduction}><span className={styles.introIcon}><Code2 size={21} /></span><div><strong>Implementation</strong><p>{files.length} original {files.length === 1 ? 'file' : 'files'}{languages.length ? ` · ${languages.join(' & ')}` : ''}</p></div></div>
     <div className={styles.workspace}>
       <aside className={styles.explorer}>
         <div className={styles.explorerHeading}><ListTree size={15} /><strong>Files</strong><span>{files.length}</span></div>
@@ -70,7 +70,7 @@ export function LLDDocument({ files }: { files: LldSourceFile[] }) {
         <nav aria-label="Implementation file hierarchy"><div className={styles.root}><FolderOpen size={14} /><span>{base || 'Repository'}</span></div>{filteredFiles.length ? <SourceTree tree={tree} selected={selected} onSelect={select} /> : <p className={styles.noFiles}>No matching files.</p>}</nav>
       </aside>
       <div className={styles.files}>
-        <div className={styles.fileTools}><span>Read the design, then follow the code.</span><div><button type="button" onClick={() => setExpanded(files.map(file => file.path))}><Plus size={12} />Expand all</button><button type="button" onClick={() => setExpanded([])}><Minus size={12} />Collapse all</button></div></div>
+        <div className={styles.fileTools}><div><button type="button" onClick={() => setExpanded(files.map(file => file.path))}><Plus size={12} />Expand all</button><button type="button" onClick={() => setExpanded([])}><Minus size={12} />Collapse all</button></div></div>
         {files.map(file => {
           const open = expanded.includes(file.path);
           const relative = base && file.path.startsWith(`${base}/`) ? file.path.slice(base.length + 1) : file.path;
@@ -81,9 +81,9 @@ export function LLDDocument({ files }: { files: LldSourceFile[] }) {
               <span className={styles.fileName}>{relative}</span><span className={styles.fileLanguage}>{fileLanguage(file.path)}</span>
             </summary>
             <div className={styles.fileBody}>
-              <div className={styles.sourcePath}><span title={file.path}>{file.path}</span><a href={githubFileUrl(file.path)} target="_blank" rel="noreferrer">GitHub<ExternalLink size={11} /></a></div>
+              <div className={styles.sourcePath}><span title={file.path}>{file.path}</span></div>
               {isCodeFile(file.path) ? <CodeBlock code={file.text} path={file.path} collapsible={false} /> : <Documentation file={file} />}
-              <div className={styles.fileFooter}><span>{fileLineCount(file.text).toLocaleString()} lines · Original source</span><a href={`#${fileId(file.path)}`} onClick={() => setSelected(file.path)}>Back to file header</a></div>
+              <div className={styles.fileFooter}><span>{fileLineCount(file.text).toLocaleString()} lines</span><a href={`#${fileId(file.path)}`} onClick={() => setSelected(file.path)}>Back to file header</a></div>
             </div>
           </details>;
         })}

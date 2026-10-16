@@ -23,3 +23,8 @@
 @media(min-width:1450px){.block .pre{font-size:13px}}
 @media(max-width:600px){.toolbar{gap:7px;padding:9px}.toolbar button{font-size:10px}.lines{font-size:9px}.block .pre{font-size:11px;padding:16px 14px 18px 48px;max-height:560px}.line:before{right:calc(100% + 13px);font-size:9px}.actions{gap:1px}}
 @media print{.block{background:#fff;color:#111;border:1px solid #bbb;break-inside:auto}.toolbar{background:#eee;color:#111}.actions,.collapse{display:none!important}.block .pre{overflow:visible;max-height:none;white-space:pre-wrap;font-size:9px}.block .pre code{min-width:0}.keyword,.type,.comment,.string,.number,.annotation{color:inherit}.language,.lines{color:#333}}
+
+/* Code retains its dark editor palette in both themes. */
+.block .pre code{background:transparent!important;color:inherit!important}
+.line:before{color:#9db3a3}
+@media(min-width:1100px){.block .pre{font-size:13px}}

@@ -8,7 +8,7 @@ import {HLD_ROADMAP_TAB_ID,roadmapStatusCell} from '@/lib/hld-roadmap.mjs';
 import {RoadmapStatus} from '@/components/roadmap-status';
 type Presentation=ReturnType<typeof nativePresentation>;
 function color(value?:NativeColor){const rgb=value?.color?.rgbColor;if(!rgb)return undefined;return `rgb(${[rgb.red||0,rgb.green||0,rgb.blue||0].map(c=>Math.round(c*255)).join(',')})`;}
-function safeLink(url?:string){return url&&/^(https?:\/\/|mailto:)/i.test(url)?url:undefined;}
+function safeLink(url?:string){return url&&/^(https?:\/\/|mailto:)/i.test(url)&&!/^https?:\/\/docs\.google\.com\//i.test(url)?url:undefined;}
 function runStyle(s:NativeTextStyle={}):CSSProperties{return {fontWeight:s.bold?700:undefined,fontStyle:s.italic?'italic':undefined,textDecoration:[s.underline?'underline':'',s.strikethrough?'line-through':''].filter(Boolean).join(' ')||undefined,color:color(s.foregroundColor),backgroundColor:color(s.backgroundColor),verticalAlign:s.baselineOffset==='SUPERSCRIPT'?'super':s.baselineOffset==='SUBSCRIPT'?'sub':undefined};}
 function runs(p:NativeParagraph,tab:NativeTab,heading=false):ReactNode{return (p.elements||[]).map((e,i)=>{
   if(e.dropdown?.dropdownProperties?.displayValue)return <span key={i} className="original-dropdown">{e.dropdown.dropdownProperties.displayValue}</span>;

@@ -21,7 +21,7 @@
 }
 
 .prose .original-document {
-  color: #2e3b32;
+  color: var(--text);
   font-family: inherit;
   font-size: 1em;
   line-height: 1.75;
@@ -48,7 +48,7 @@
 .prose .original-document h5,
 .prose .original-document h6,
 .prose .original-chapter-title {
-  color: #2b4936;
+  color: var(--text);
   font-family: 'Manrope', sans-serif;
   font-weight: 700;
   line-height: 1.4;
@@ -91,7 +91,7 @@
 
 .prose .original-chapter-title {
   padding-top: 1.25em;
-  border-top: 1px solid #dfe6d7;
+  border-top: 1px solid var(--line);
 }
 
 .prose .original-chapter-section:first-child > .original-chapter-title {
@@ -131,7 +131,7 @@
   line-height: inherit;
   padding: .08em .25em;
   border-radius: 3px;
-  background-color: #edf1e9;
+  background-color: var(--surface);
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
 }
@@ -198,7 +198,7 @@
 
 .prose .original-document .original-rule hr {
   margin: 1.75em 0;
-  border-color: #dce4d7;
+  border-color: var(--line);
 }
 
 .reader-toc > .eyebrow {
@@ -213,7 +213,7 @@
 .reader-toc nav a {
   font-size: 12px;
   line-height: 1.6;
-  color: #687962;
+  color: var(--muted);
 }
 
 .reader-toc nav a[data-level="3"] { padding-left: 24px; }
@@ -221,10 +221,10 @@
 .reader-toc nav a[data-level="5"],
 .reader-toc nav a[data-level="6"] { padding-left: 34px; }
 .original-anchor { display: block; scroll-margin-top: 100px; }
-.prose .roadmap-help { padding: 12px 15px; border: 1px solid #dce6d5; border-radius: 7px; background: #f3f7ee; color: #566b49; font-size: .875em; line-height: 1.7; margin-bottom: 1.5em; }
-.problem-table td .problem-title-link { display: inline; color: #344e2d; font-size: inherit; font-weight: 500; }
+.prose .roadmap-help { padding: 12px 15px; border: 1px solid var(--line); border-radius: 7px; background: var(--surface); color: var(--text); font-size: .875em; line-height: 1.7; margin-bottom: 1.5em; }
+.problem-table td .problem-title-link { display: inline; color: var(--text); font-size: inherit; font-weight: 500; }
 .problem-table td .problem-title-link:hover { text-decoration: underline; text-underline-offset: 3px; }
-.problem-table td a:focus-visible { outline: 2px solid #6b9053; outline-offset: 4px; border-radius: 2px; }
+.problem-table td a:focus-visible { outline: 2px solid var(--focus); outline-offset: 4px; border-radius: 2px; }
 
 .reader-tip strong {
   font-size: 12px;
@@ -275,7 +275,7 @@
   }
 
   .prose .original-document {
-    color: #000;
+    color: var(--text);
     line-height: 1.5;
   }
 }
