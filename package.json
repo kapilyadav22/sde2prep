@@ -9,7 +9,7 @@
     "typecheck": "tsc --noEmit",
     "import": "node scripts/import.mjs",
     "sync": "node scripts/sync.mjs",
-    "test": "node --test scripts/content.test.mjs",
+    "test": "node --test scripts/*.test.mjs",
     "postinstall": "node scripts/copy-worker.mjs",
     "rebuild:originals": "node scripts/rebuild-originals.mjs",
     "verify:originals": "python3 scripts/verify-originals.py",

@@ -1,6 +1,8 @@
 import type {CSSProperties,ReactNode} from 'react';
 import type {NativeBlock,NativeTab,NativeTextStyle,NativeParagraph,NativeColor} from '@/lib/native-document';
 import {headingId,paragraphText} from '@/lib/native-document';
+import {nativeCodeGroup} from '@/lib/native-code.mjs';
+import {CodeBlock} from '@/components/code-block';
 function color(value?:NativeColor){const rgb=value?.color?.rgbColor;if(!rgb)return undefined;return `rgb(${[rgb.red||0,rgb.green||0,rgb.blue||0].map(c=>Math.round(c*255)).join(',')})`;}
 function safeLink(url?:string){return url&&/^(https?:\/\/|mailto:)/i.test(url)?url:undefined;}
 function runStyle(s:NativeTextStyle={}):CSSProperties{return {fontWeight:s.bold?700:undefined,fontStyle:s.italic?'italic':undefined,textDecoration:[s.underline?'underline':'',s.strikethrough?'line-through':''].filter(Boolean).join(' ')||undefined,fontSize:s.fontSize?.magnitude?`${s.fontSize.magnitude/11.5}em`:undefined,fontFamily:s.weightedFontFamily?.fontFamily?`${s.weightedFontFamily.fontFamily}, ${/consolas|courier|mono/i.test(s.weightedFontFamily.fontFamily)?'monospace':'Arial, sans-serif'}`:undefined,color:color(s.foregroundColor),backgroundColor:color(s.backgroundColor),verticalAlign:s.baselineOffset==='SUPERSCRIPT'?'super':s.baselineOffset==='SUBSCRIPT'?'sub':undefined};}
@@ -16,8 +18,10 @@ function paragraph(b:NativeBlock,tab:NativeTab){const p=b.paragraph!;const ps=p.
   const hasImage=p.elements?.some(e=>e.inlineObjectElement);
   return <p style={style} className={!paragraphText(p)&&!hasImage?'original-empty':hasImage?'original-image-paragraph':undefined}>{content}</p>;
 }
-function blocks(content:NativeBlock[],tab:NativeTab):ReactNode[]{const result:ReactNode[]=[];for(let i=0;i<content.length;i++){
+function blocks(content:NativeBlock[],tab:NativeTab,codeSections=false):ReactNode[]{const result:ReactNode[]=[];for(let i=0;i<content.length;i++){
   const b=content[i];
+  const code=codeSections?nativeCodeGroup(content,i):null;
+  if(code){result.push(<div className="original-code-section" key={`code-${b.startIndex}`} data-native-code-start={b.startIndex} data-native-code-end={content[code.end-1].startIndex}><CodeBlock code={code.code} language="Java"/></div>);i=code.end-1;continue;}
   if(b.paragraph?.bullet){const id=b.paragraph.bullet.listId;const items:NativeBlock[]=[];while(i<content.length&&content[i].paragraph?.bullet?.listId===id)items.push(content[i++]);i--;
     const list=tab.lists?.[id||'']?.listProperties?.nestingLevels;
     const container=(depth:number,nodes:ReactNode[],key?:string)=>{const spec=list?.[depth];const glyph=spec?.glyphType;const ordered=!!glyph&&glyph!=='GLYPH_TYPE_UNSPECIFIED';const types:Record<string,CSSProperties['listStyleType']>={DECIMAL:'decimal',ZERO_DECIMAL:'decimal-leading-zero',ALPHA:'lower-alpha',UPPER_ALPHA:'upper-alpha',ROMAN:'lower-roman',UPPER_ROMAN:'upper-roman'};return ordered?<ol key={key} start={spec?.startNumber||1} style={{listStyleType:types[glyph!]||'decimal'}}>{nodes}</ol>:<ul key={key}>{nodes}</ul>;};
@@ -26,4 +30,4 @@ function blocks(content:NativeBlock[],tab:NativeTab):ReactNode[]{const result:Re
   if(b.paragraph)result.push(<div className="original-block" key={`p-${b.startIndex}`}>{paragraph(b,tab)}</div>);
   else if(b.table)result.push(<div key={`table-${b.startIndex}`} className="original-table-scroll"><table className="original-table"><tbody>{b.table.tableRows.map((row,r)=><tr key={r}>{row.tableCells.map((cell,c)=><td key={c} rowSpan={cell.tableCellStyle?.rowSpan||1} colSpan={cell.tableCellStyle?.columnSpan||1} style={{backgroundColor:color(cell.tableCellStyle?.backgroundColor)}}>{blocks(cell.content||[],tab)}</td>)}</tr>)}</tbody></table></div>);
 }return result;}
-export function OriginalDocument({tab}:{tab:NativeTab}){return <div className="original-document" data-original-tab={tab.tabId}>{blocks(tab.body?.content||[],tab)}</div>;}
+export function OriginalDocument({tab,codeSections=false}:{tab:NativeTab;codeSections?:boolean}){return <div className="original-document" data-original-tab={tab.tabId}>{blocks(tab.body?.content||[],tab,codeSections)}</div>;}

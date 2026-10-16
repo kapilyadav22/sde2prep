@@ -63,7 +63,7 @@ export function CodeBlock({ code, path = '', language, collapsible = true }: { c
   }
 
   return <div className={styles.block}>
-    <div className={styles.toolbar}>
+    <div className={styles.toolbar} data-source-chrome="true">
       {collapsible && <button type="button" className={styles.collapse} aria-label={collapsed ? 'Expand source code' : 'Collapse source code'} aria-expanded={!collapsed} onClick={() => setCollapsed(!collapsed)}>{collapsed ? <ChevronRight size={15} /> : <ChevronDown size={15} />}</button>}
       <span className={styles.language}>{label}</span>
       <span className={styles.lines}>{fileLineCount(code).toLocaleString()} lines</span>

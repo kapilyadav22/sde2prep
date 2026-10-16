@@ -57,3 +57,4 @@
 .original-document .original-list-continuation{list-style:none}
 .original-document .original-rule hr{border:0;border-top:1px solid #bbc6b8;margin:1.5em 0}
 .original-document .original-dropdown{display:inline-block;border:1px solid #d4d9d0;border-radius:12px;padding:.1em .65em;background:#f3f5f0;color:#323d2f;font-size:.85em;font-family:Arial,sans-serif;line-height:1.5;white-space:nowrap}
+.original-document .original-code-section{margin:1.25em 0;min-width:0;overflow-wrap:normal}
