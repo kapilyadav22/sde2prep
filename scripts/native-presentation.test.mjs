@@ -55,7 +55,19 @@ test('source heading levels become a readable hierarchy without duplicate TOC en
   for (const chapter of java.tabs) {
     const plan=nativePresentation(chapter,{articleTitle:chapter.title});
     assert.ok(plan.toc.every(item=>item.level>=2&&item.level<=6));
+    let previous=1;
+    for (const item of plan.toc) { assert.ok(item.level<=previous+1,'Heading levels do not skip a parent'); previous=item.level; }
     assert.equal(new Set(plan.toc.map(item=>item.id)).size,plan.toc.length);
     assert.ok(plan.toc.every(item=>!plan.hidden.has(chapter.body.content.find(block=>`original-${chapter.tabId}-${block.startIndex}`===item.id))));
   }
+});
+
+test('bold AWS section labels and numbered questions get semantic heading levels', () => {
+  const chapter=read('../content/raw/aws-native.json').tabs.find(tab=>tab.tabId==='t.jg2c9u7bs41r');
+  const plan=nativePresentation(chapter,{articleTitle:'EC2 Interview Questions'});
+  const blocks=chapter.body.content;
+  assert.equal(plan.headings.get(blocks.find(block=>block.startIndex===26)),2);
+  assert.equal(plan.headings.get(blocks.find(block=>block.startIndex===49)),3);
+  assert.ok(!plan.headings.has(blocks.find(block=>block.startIndex===93)), 'The answer remains a normal paragraph');
+  assert.ok(plan.toc.some(item=>item.title.includes('Basic EC2 Concepts')));
 });
