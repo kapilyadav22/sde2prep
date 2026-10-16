@@ -20,6 +20,6 @@ export function LocalReader(){
   useEffect(()=>setId(new URLSearchParams(window.location.search).get('id')||''),[]);
   if(!ready)return <div className="empty-state"><p>Opening your notes…</p></div>;
   const note=notes.find(n=>n.id===id&&n.local);
-  if(!note)return <div className="empty-state"><BookOpen size={32}/><h1>This note isn’t in this browser.</h1><p>Import its source document here to keep reading.</p><Link className="button" href="/sources/">Go to sources<ArrowRight size={16}/></Link></div>;
+  if(!note)return <div className="empty-state"><BookOpen size={32}/><h1>This note isn’t in this browser.</h1><p>Browse the published library to keep reading.</p><Link className="button" href="/library/">Explore notes<ArrowRight size={16}/></Link></div>;
   return <Reader key={note.id} note={note}/>;
 }

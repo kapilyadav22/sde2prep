@@ -9,9 +9,16 @@ for(const [old,id] of Object.entries(aliases)){
   const target=`/notes/${id}/`;const html=`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Opening your note · sde2prep</title><link rel="canonical" href="${target}"><meta http-equiv="refresh" content="0;url=${target}"></head><body><p>This note is now part of its original chapter. <a href="${target}">Continue reading</a></p><script>location.replace(${JSON.stringify(target)}+location.hash)</script></body></html>`;
   await fs.writeFile(path.join(directory,'index.html'),html);
 }
+// Retired DSA notebooks lead back to the problem list, including old bookmarks.
+const retiredDsa=JSON.parse(await fs.readFile('content/library.json','utf8')).notes.filter(note=>note.category==='dsa');
+for(const note of retiredDsa){
+  if(!/^[a-z0-9-]+$/.test(note.id))throw Error('Invalid retired note ID');
+  const directory=path.join(out,'notes',note.id);await fs.rm(directory,{recursive:true,force:true});await fs.mkdir(directory,{recursive:true});
+  await fs.writeFile(path.join(directory,'index.html'),'<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DSA practice · sde2prep</title><link rel="canonical" href="/dsa/"><meta http-equiv="refresh" content="0;url=/dsa/"></head><body><p><a href="/dsa/">Open the DSA problem list</a></p><script>location.replace("/dsa/")</script></body></html>');
+}
 // All internal navigation uses regular anchors. Next embeds the hydration payload
 // in each HTML page, so duplicated external client-navigation payloads are unused.
 let removed=0,bytes=0;
 async function trim(directory){for(const entry of await fs.readdir(directory,{withFileTypes:true})){const file=path.join(directory,entry.name);if(entry.isDirectory())await trim(file);else if(entry.name==='index.txt'||/^__next\..*\.txt$/.test(entry.name)){bytes+=(await fs.stat(file)).size;await fs.unlink(file);removed++;}}}
 await trim(out);
-console.log(`Static package: ${Object.keys(aliases).length} legacy redirects; removed ${removed} unused navigation payloads (${Math.round(bytes/1024/1024)} MiB).`);
+console.log(`Static package: ${Object.keys(aliases).length+retiredDsa.length} legacy redirects; removed ${removed} unused navigation payloads (${Math.round(bytes/1024/1024)} MiB).`);

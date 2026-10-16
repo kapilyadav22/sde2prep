@@ -221,6 +221,10 @@
 .reader-toc nav a[data-level="5"],
 .reader-toc nav a[data-level="6"] { padding-left: 34px; }
 .original-anchor { display: block; scroll-margin-top: 100px; }
+.prose .roadmap-help { padding: 12px 15px; border: 1px solid #dce6d5; border-radius: 7px; background: #f3f7ee; color: #566b49; font-size: .875em; line-height: 1.7; margin-bottom: 1.5em; }
+.problem-table td .problem-title-link { display: inline; color: #344e2d; font-size: inherit; font-weight: 500; }
+.problem-table td .problem-title-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+.problem-table td a:focus-visible { outline: 2px solid #6b9053; outline-offset: 4px; border-radius: 2px; }
 
 .reader-tip strong {
   font-size: 12px;

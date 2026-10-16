@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import Link from '@/components/static-link';
-import { ArrowRight, Check, ChevronRight, Code2, FileCode2, FileText, Folder, FolderOpen, Github, Layers, Plus, Search } from 'lucide-react';
+import { ArrowRight, Check, ChevronRight, Code2, FileCode2, FileText, Folder, FolderOpen, Github, Layers, Search } from 'lucide-react';
 import { useWorkspace, noteHref } from './workspace';
 import { buildLldTree, commonFolder, fileLanguage, isCodeFile, lldFileId, type LldChapterManifest, type LldTree } from '@/lib/lld-source';
 import styles from './lld-browser.module.css';
@@ -15,7 +15,7 @@ function FolderContents({ tree, href }: { tree: LldTree; href: string }) {
 }
 
 export function LLDBrowser({ chapters = [] }: { chapters?: LldChapterManifest[] }) {
-  const { notes, user, openImport } = useWorkspace();
+  const { notes, user } = useWorkspace();
   const [query, setQuery] = useState('');
   const [language, setLanguage] = useState('all');
   const collection = notes.filter(note => note.category === 'lld');
@@ -32,7 +32,7 @@ export function LLDBrowser({ chapters = [] }: { chapters?: LldChapterManifest[] 
   ];
 
   return <>
-    <div className="page-heading"><div><div className="eyebrow">DESIGN THROUGH CODE</div><h1>Low-level design</h1><p>Follow each design from its requirements to the original implementation.</p></div><button className="button" onClick={() => openImport()}><Plus size={16} />Import notes</button></div>
+    <div className="page-heading"><div><div className="eyebrow">DESIGN THROUGH CODE</div><h1>Low-level design</h1><p>Follow each design from its requirements to the original implementation.</p></div></div>
     <section className={styles.hero} aria-label="Repository overview"><span className={styles.heroIcon}><Code2 size={28} /></span><div><span className={styles.eyebrow}>MS_LLD · KAPILYADAV22</span><h2>Every design. In its place.</h2><p>Explore topics, expand folders, and read each source file with its original code and comments.</p><div className={styles.stats}><span><Layers size={13} />{collection.length} designs & topics</span><span><FileCode2 size={13} />{allFiles.length} source files</span><span>Java & C++</span></div></div><a href="https://github.com/kapilyadav22/MS_LLD" target="_blank" rel="noreferrer"><Github size={15} />View repository<ArrowRight size={12} /></a></section>
     <div className={styles.toolbar}><div className={styles.filters} aria-label="Implementation language">{[{ id: 'all', name: 'All implementations' }, { id: 'java', name: 'Java & shared' }, { id: 'cpp', name: 'C++' }].map(option => <button key={option.id} className={language === option.id ? styles.activeFilter : ''} onClick={() => setLanguage(option.id)} aria-pressed={language === option.id}>{option.name}</button>)}</div><label className={styles.search}><Search size={15} /><input aria-label="Search low-level designs and source files" value={query} onChange={event => setQuery(event.target.value)} placeholder="Find a design or file…" /></label></div>
     {groups.map(group => group.items.length > 0 && <section className={styles.group} key={group.id}><div className={styles.groupHeading}><span>{group.id === 'cpp' ? 'C++' : 'J'}</span><div><h2>{group.title}</h2><p>{group.caption}</p></div><small>{group.items.length} topics</small></div><div className={styles.cards}>
