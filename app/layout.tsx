@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Analytics } from '@vercel/analytics/next';
 import { Workspace } from '@/components/workspace';
 import { library, origin } from '@/lib/content';
 import './globals.css';
@@ -13,5 +14,5 @@ export const metadata: Metadata = {
   twitter: {card:'summary_large_image'},
 };
 export default function RootLayout({children}:{children:React.ReactNode}) {
-  return <html lang="en" suppressHydrationWarning><head><script dangerouslySetInnerHTML={{__html:`try{var t=localStorage.getItem('sde2prep-theme');document.documentElement.dataset.theme=t==='dark'||(!t&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light'}catch(e){document.documentElement.dataset.theme=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}`}}/></head><body><Workspace initialNotes={library.notes.map(n=>({id:n.id,title:n.title,category:n.category,sourceId:n.sourceId,description:n.description,minutes:n.minutes,updatedAt:n.updatedAt,tags:n.tags,content:''}))} initialSources={library.sources} problems={library.problems}>{children}</Workspace></body></html>;
+  return <html lang="en" suppressHydrationWarning><head><script dangerouslySetInnerHTML={{__html:`try{var t=localStorage.getItem('sde2prep-theme');document.documentElement.dataset.theme=t==='dark'||(!t&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light'}catch(e){document.documentElement.dataset.theme=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}`}}/></head><body><Workspace initialNotes={library.notes.map(n=>({id:n.id,title:n.title,category:n.category,sourceId:n.sourceId,description:n.description,minutes:n.minutes,updatedAt:n.updatedAt,tags:n.tags,content:''}))} initialSources={library.sources} problems={library.problems}>{children}</Workspace><Analytics /></body></html>;
 }
