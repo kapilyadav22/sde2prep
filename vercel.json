@@ -2,5 +2,14 @@
   "buildCommand": "npm run build",
   "outputDirectory": "out",
   "framework": null,
-  "installCommand": "npm install --legacy-peer-deps"
+  "installCommand": "npm install --legacy-peer-deps",
+  "functions": {
+    "api/handwritten/index.mjs": { "runtime": "nodejs22.x" },
+    "api/handwritten/[id]/[action].mjs": { "runtime": "nodejs22.x" }
+  },
+  "routes": [
+    { "src": "/api/handwritten/([\\w-]+)/(file|article|preview)", "dest": "/api/handwritten/[id]/[action].mjs" },
+    { "src": "/api/handwritten", "dest": "/api/handwritten/index.mjs" },
+    { "src": "/(.*)", "dest": "/out/$1" }
+  ]
 }
