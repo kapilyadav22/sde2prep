@@ -3,13 +3,9 @@
   "outputDirectory": "out",
   "framework": null,
   "installCommand": "npm install --legacy-peer-deps",
-  "functions": {
-    "api/handwritten/index.mjs": {},
-    "api/handwritten/[id]/[action].mjs": {}
-  },
-  "routes": [
-    { "src": "/api/handwritten/([\\w-]+)/(file|article|preview)", "dest": "/api/handwritten/[id]/[action].mjs" },
-    { "src": "/api/handwritten", "dest": "/api/handwritten/index.mjs" },
-    { "src": "/(.*)", "dest": "/out/$1" }
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/api/handwritten/:id/:action", "destination": "/api/handwritten/[id]/[action]" },
+    { "source": "/api/handwritten/", "destination": "/api/handwritten" }
   ]
 }
