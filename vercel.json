@@ -4,8 +4,8 @@
   "framework": null,
   "installCommand": "npm install --legacy-peer-deps",
   "functions": {
-    "api/handwritten/index.mjs": { "runtime": "nodejs22.x" },
-    "api/handwritten/[id]/[action].mjs": { "runtime": "nodejs22.x" }
+    "api/handwritten/index.mjs": {},
+    "api/handwritten/[id]/[action].mjs": {}
   },
   "routes": [
     { "src": "/api/handwritten/([\\w-]+)/(file|article|preview)", "dest": "/api/handwritten/[id]/[action].mjs" },
