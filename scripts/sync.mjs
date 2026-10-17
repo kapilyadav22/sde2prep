@@ -35,8 +35,13 @@ if (!process.env.GOOGLE_ACCESS_TOKEN && process.env.GOOGLE_SERVICE_ACCOUNT_KEY) 
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: `grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=${jwt}`,
     });
-    if (!tokenRes.ok) throw new Error(`Token endpoint returned HTTP ${tokenRes.status}`);
-    const { access_token } = await tokenRes.json();
+    const tokenText = await tokenRes.text();
+    if (!tokenRes.ok) throw new Error(`Token endpoint returned HTTP ${tokenRes.status}: ${tokenText.slice(0, 200)}`);
+    let tokenData;
+    try { tokenData = JSON.parse(tokenText); }
+    catch { throw new Error(`Token endpoint returned non-JSON: ${tokenText.slice(0, 200)}`); }
+    const { access_token, error, error_description } = tokenData;
+    if (error) throw new Error(`Token endpoint error: ${error} — ${error_description}`);
     if (!access_token) throw new Error('No access_token in response');
     process.env.GOOGLE_ACCESS_TOKEN = access_token;
     console.log('Google access token generated from service account key.');
