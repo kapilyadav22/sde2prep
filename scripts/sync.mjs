@@ -10,6 +10,42 @@ const contentDir = path.join(root,'content');
 try { process.loadEnvFile(path.join(root, '.env.local')); } catch {}
 try { process.loadEnvFile(path.join(root, '.env')); } catch {}
 
+// Auto-generate GOOGLE_ACCESS_TOKEN from a service account key if available.
+// Store the full service account JSON as GOOGLE_SERVICE_ACCOUNT_KEY in Vercel env vars.
+if (!process.env.GOOGLE_ACCESS_TOKEN && process.env.GOOGLE_SERVICE_ACCOUNT_KEY) {
+  try {
+    const key = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY);
+    const now = Math.floor(Date.now() / 1000);
+    const header  = { alg: 'RS256', typ: 'JWT' };
+    const payload = {
+      iss: key.client_email,
+      scope: 'https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/documents.readonly',
+      aud: key.token_uri,
+      iat: now,
+      exp: now + 3600,
+    };
+    const b64url = obj => Buffer.from(JSON.stringify(obj)).toString('base64url');
+    const unsigned = `${b64url(header)}.${b64url(payload)}`;
+    const { createSign } = await import('node:crypto');
+    const signer = createSign('RSA-SHA256');
+    signer.update(unsigned);
+    const jwt = `${unsigned}.${signer.sign(key.private_key, 'base64url')}`;
+    const tokenRes = await fetch(key.token_uri, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=${jwt}`,
+    });
+    if (!tokenRes.ok) throw new Error(`Token endpoint returned HTTP ${tokenRes.status}`);
+    const { access_token } = await tokenRes.json();
+    if (!access_token) throw new Error('No access_token in response');
+    process.env.GOOGLE_ACCESS_TOKEN = access_token;
+    console.log('Google access token generated from service account key.');
+  } catch (err) {
+    console.warn(`Service account token generation failed: ${err.message}. Falling back to cached snapshots.`);
+  }
+}
+
+
 const config = JSON.parse(await fs.readFile(path.join(contentDir,'sources.json'),'utf8'));
 const local = process.argv.includes('--local');
 const selected = process.argv.find(x=>x.startsWith('--source='))?.split('=')[1];
